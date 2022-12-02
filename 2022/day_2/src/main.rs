@@ -1,5 +1,21 @@
 use std::{fs, str::Lines};
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Play {
+    Rock,
+    Paper,
+    Scissors,
+    Error,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum State {
+    Win,
+    Lose,
+    Draw,
+    Invalid,
+}
+
 fn main() {
     let input_data = fs::read_to_string("./inputs/test.txt").expect("ohno");
     let input_lines = input_data.lines();
@@ -37,72 +53,72 @@ fn part_two(input_data: Lines) -> i32 {
     score
 }
 
-fn get_my_play<'a>(opponent_play: &'a str, required_outcome: &str) -> &'a str {
-    if required_outcome == "draw" {
-        return &opponent_play;
+fn get_my_play<'a>(opponent_play: Play, required_outcome: State) -> Play {
+    if required_outcome == State::Draw {
+        return opponent_play;
     }
     match (opponent_play, required_outcome) {
-        ("rock", "win") => "paper",
-        ("rock", "lose") => "scissors",
-        ("paper", "win") => "scissors",
-        ("paper", "lose") => "rock",
-        ("scissors", "win") => "rock",
-        ("scissors", "lose") => "paper",
-        _ => "error",
+        (Play::Rock, State::Win) => Play::Paper,
+        (Play::Rock, State::Lose) => Play::Scissors,
+        (Play::Paper, State::Win) => Play::Scissors,
+        (Play::Paper, State::Lose) => Play::Rock,
+        (Play::Scissors, State::Win) => Play::Rock,
+        (Play::Scissors, State::Lose) => Play::Paper,
+        _ => Play::Error,
     }
 }
 
-fn get_score(opponent: &str, mine: &str) -> i32 {
+fn get_score(opponent: Play, mine: Play) -> i32 {
     get_play_score(opponent, mine) + get_base_score(mine)
 }
 
-fn get_play_score(opponent: &str, mine: &str) -> i32 {
+fn get_play_score(opponent: Play, mine: Play) -> i32 {
     if opponent == mine {
         return 3;
     }
     match (opponent, mine) {
-        ("rock", "paper") => 6,
-        ("paper", "scissors") => 6,
-        ("scissors", "rock") => 6,
-        ("rock", "scissors") => 0,
-        ("paper", "rock") => 0,
-        ("scissors", "paper") => 0,
+        (Play::Rock, Play::Paper) => 6,
+        (Play::Paper, Play::Scissors) => 6,
+        (Play::Scissors, Play::Rock) => 6,
+        (Play::Rock, Play::Scissors) => 0,
+        (Play::Paper, Play::Rock) => 0,
+        (Play::Scissors, Play::Paper) => 0,
         _ => 0,
     }
 }
 
-fn get_base_score(play: &str) -> i32 {
+fn get_base_score(play: Play) -> i32 {
     match play {
-        "rock" => 1,
-        "paper" => 2,
-        "scissors" => 3,
+        Play::Rock => 1,
+        Play::Paper => 2,
+        Play::Scissors => 3,
         _ => 0,
     }
 }
 
-fn get_opponent_symbol(play: &str) -> &str {
+fn get_opponent_symbol(play: &str) -> Play {
     match play {
-        "A" => "rock",
-        "B" => "paper",
-        "C" => "scissors",
-        _ => "",
+        "A" => Play::Rock,
+        "B" => Play::Paper,
+        "C" => Play::Scissors,
+        _ => Play::Error,
     }
 }
 
-fn get_my_symbol(play: &str) -> &str {
+fn get_my_symbol(play: &str) -> Play {
     match play {
-        "X" => "rock",
-        "Y" => "paper",
-        "Z" => "scissors",
-        _ => "",
+        "X" => Play::Rock,
+        "Y" => Play::Paper,
+        "Z" => Play::Scissors,
+        _ => Play::Error,
     }
 }
 
-fn get_outcome_symbol(play: &str) -> &str {
+fn get_outcome_symbol(play: &str) -> State {
     match play {
-        "X" => "lose",
-        "Y" => "draw",
-        "Z" => "win",
-        _ => "",
+        "X" => State::Lose,
+        "Y" => State::Draw,
+        "Z" => State::Win,
+        _ => State::Invalid,
     }
 }
