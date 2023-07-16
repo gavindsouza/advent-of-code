@@ -19,41 +19,37 @@ enum State {
 fn main() {
     let input_data = fs::read_to_string("./inputs/test.txt").expect("ohno");
     let input_lines = input_data.lines();
-    let p1_score = part_one(input_lines.clone());
-    let p2_score = part_two(input_lines.clone());
+    let p1 = part_one(input_lines.clone());
+    let p2 = part_two(input_lines.clone());
 
-    println!("Score (p1): {}", p1_score);
-    println!("Score (p2): {}", p2_score);
+    println!("P1: {}", p1);
+    println!("P2: {}", p2);
 }
 
 fn part_one(input_data: Lines) -> i32 {
-    let mut score = 0;
-
-    for line in input_data {
-        let plays = line.split(" ").collect::<Vec<&str>>();
-        let opponent_play = get_opponent_symbol(plays[0]);
-        let my_play = get_my_symbol(plays[1]);
-
-        score += get_score(opponent_play, my_play);
-    }
-    score
+    input_data
+        .map(|line| {
+            let plays: Vec<&str> = line.split(' ').collect();
+            let opponent_play = get_opponent_symbol(plays[0]);
+            let my_play = get_my_symbol(plays[1]);
+            get_score(opponent_play, my_play)
+        })
+        .sum()
 }
 
 fn part_two(input_data: Lines) -> i32 {
-    let mut score = 0;
-
-    for line in input_data {
-        let plays = line.split(" ").collect::<Vec<&str>>();
-        let opponent_play = get_opponent_symbol(plays[0]);
-        let required_outcome = get_outcome_symbol(plays[1]);
-        let my_play = get_my_play(opponent_play, required_outcome);
-
-        score += get_score(opponent_play, my_play);
-    }
-    score
+    input_data
+        .map(|line| {
+            let plays: Vec<&str> = line.split(' ').collect();
+            let opponent_play = get_opponent_symbol(plays[0]);
+            let required_outcome = get_outcome_symbol(plays[1]);
+            let my_play = get_my_play(opponent_play, required_outcome);
+            get_score(opponent_play, my_play)
+        })
+        .sum()
 }
 
-fn get_my_play<'a>(opponent_play: Play, required_outcome: State) -> Play {
+fn get_my_play(opponent_play: Play, required_outcome: State) -> Play {
     if required_outcome == State::Draw {
         return opponent_play;
     }

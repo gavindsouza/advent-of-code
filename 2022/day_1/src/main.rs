@@ -1,28 +1,19 @@
-use core::str::Lines;
-use std::fs;
-
 fn main() {
-    let input_data = fs::read_to_string("./inputs/test.txt").expect("ohno");
-    let mut calorie_list = get_elven_calories(input_data.lines());
+    let lines: Vec<Option<u32>> = include_str!("../inputs/test.txt")
+        .lines()
+        .map(|s| s.parse::<u32>().ok())
+        .collect();
 
-    calorie_list.sort();
-    let top_three = calorie_list[calorie_list.len() - 3..calorie_list.len()].to_vec();
+    let groups_sum = lines
+        .split(|x| x.is_none())
+        .map(|group| group.iter().filter_map(|x| *x).sum::<u32>());
 
-    println!("MAX (p1): {}", top_three.last().unwrap());
-    println!("MAX3 (p2): {}", top_three.iter().sum::<i32>());
-}
+    let p1 = groups_sum.clone().max().unwrap();
 
-fn get_elven_calories(calorie_list: Lines) -> Vec<i32> {
-    let mut elves_calories = vec![];
-    let mut current_calorie_count = 0;
+    let mut sorted_groups_sum = groups_sum.clone().collect::<Vec<_>>();
+    sorted_groups_sum.sort_by(|a, b| b.cmp(a));
+    let p2: u32 = sorted_groups_sum.iter().take(3).sum();
 
-    for calorie in calorie_list {
-        if calorie == "" {
-            elves_calories.push(current_calorie_count);
-            current_calorie_count = 0;
-        } else {
-            current_calorie_count += calorie.parse::<i32>().unwrap();
-        }
-    }
-    elves_calories
+    println!("P1: {:?}", p1);
+    println!("P2: {:?}", p2);
 }

@@ -40,7 +40,6 @@ fn part1(input_stream: &str) -> i32 {
             if line == "$ cd /" {
                 push_to_current_node = false;
                 continue;
-
             } else if line == "$ cd .." {
                 push_to_current_node = false;
                 continue;
@@ -56,11 +55,9 @@ fn part1(input_stream: &str) -> i32 {
             current_node.children.push(&node);
             push_to_current_node = false;
             continue;
-
         } else if line.starts_with("$ ls") {
             push_to_current_node = true;
             continue;
-
         } else if push_to_current_node {
             let (file_size, file_name) = line.split_at(line.find(" ").unwrap());
 
@@ -73,7 +70,6 @@ fn part1(input_stream: &str) -> i32 {
                     size: 0,
                 };
                 current_node.children.push(&node);
-
             } else {
                 let node = FSNode {
                     name: file_name.trim(),
@@ -88,7 +84,6 @@ fn part1(input_stream: &str) -> i32 {
     }
     0
 }
-
 
 #[cfg(test)]
 mod tests {
